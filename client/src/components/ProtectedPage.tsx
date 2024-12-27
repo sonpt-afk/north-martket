@@ -5,6 +5,7 @@ import { GetCurrentUser } from '../apicalls/users'
 import { User as UserType } from '../types/user'
 import { useDispatch } from 'react-redux'
 import { SetLoader } from '../redux/loadersSlice'
+import { SetUser } from '../redux/usersSlice';
 
 interface ProtectedPageProps {
   children: ReactNode;
@@ -16,19 +17,21 @@ function ProtectedPage({ children }: ProtectedPageProps) {
   const dispatch = useDispatch()
   const validateToken = async () => {
     try {
-            dispatch(SetLoader(true));
-            const response = await GetCurrentUser()
-            dispatch(SetLoader(false));
+      dispatch(SetLoader(true));
+      const response = await GetCurrentUser();
+      dispatch(SetLoader(false));
       
-            if (response.success && response.data) {
-        setUser(response.data)
+      if (response.success && response.data) {
+        setUser(response.data);
+        dispatch(SetUser(response.data)); // Add this line to set user in Redux store
       } else {
-        localStorage.removeItem('token') // Clear invalid token
-        navigate('/login')
+        localStorage.removeItem('token');
+        navigate('/login');
       }
     } catch (error) {
       localStorage.removeItem('token') // Clear invalid token
       navigate('/login')
+      message.error(error instanceof Error ? error.message : 'An error occurred')
     }
   }
 
