@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Form, Input, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginUser } from '../../apicalls/users';
@@ -33,10 +33,11 @@ const Login: React.FC = () => {
     }
   };
 
-  const onFinishFailed = (errorInfo: any) => {
-    console.log('Failed:', errorInfo);
-    message.error('Please check your input');
-  };
+    useEffect(() => {
+      if(localStorage.getItem('token')){
+        navigate('/')
+      }
+    })
 
   return (
     <div className="flex justify-center items-center min-h-screen bg-primary">
@@ -46,7 +47,6 @@ const Login: React.FC = () => {
           form={form}
           name="login"
           onFinish={onFinish}
-          onFinishFailed={onFinishFailed}
           autoComplete="off"
           layout="vertical"
         >

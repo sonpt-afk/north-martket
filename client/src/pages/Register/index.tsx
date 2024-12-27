@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import type { FormProps } from 'antd';
 import { Button, Form, Input, message } from 'antd';
 import { RegisterUser } from '../../apicalls/users';
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 
 type FieldType = {
   name: string;
@@ -12,6 +12,7 @@ type FieldType = {
 
 
 const Register: React.FC = () => {
+  const nav = useNavigate();
   const onFinish: FormProps<FieldType>['onFinish'] = async(values) => {
     try{
       const response = await RegisterUser(values)
@@ -24,6 +25,13 @@ const Register: React.FC = () => {
       message.error(error instanceof Error ? error.message : 'An error occurred')
     }
   };
+
+  useEffect(() => {
+    if(localStorage.getItem('token')){
+      nav('/')
+    }
+  })
+   
   return (
     <>
       <div className="bg-primary  h-screen flex items-center justify-center">
