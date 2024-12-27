@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router-dom'
 import { message } from 'antd'
 import { GetCurrentUser } from '../apicalls/users'
 import { User as UserType } from '../types/user'
+import { useDispatch } from 'react-redux'
+import { SetLoader } from '../redux/loadersSlice'
 
 interface ProtectedPageProps {
   children: ReactNode;
@@ -11,11 +13,14 @@ interface ProtectedPageProps {
 function ProtectedPage({ children }: ProtectedPageProps) {
   const [user, setUser] = useState<UserType | null>(null)
   const navigate = useNavigate()
-
+  const dispatch = useDispatch()
   const validateToken = async () => {
     try {
-      const response = await GetCurrentUser()
-      if (response.success && response.data) {
+            dispatch(SetLoader(true));
+            const response = await GetCurrentUser()
+            dispatch(SetLoader(false));
+      
+            if (response.success && response.data) {
         setUser(response.data)
       } else {
         localStorage.removeItem('token') // Clear invalid token
@@ -37,15 +42,35 @@ function ProtectedPage({ children }: ProtectedPageProps) {
   }, [navigate]) // Add navigate to dependency array
 
   return (
-    <div>
-      {user && (
-        <div className='p-5'>
-          {user.name}
+    user && (
+      <div className="">
+            {/* header */}
+          <div className="flex justify-between items-center bg-primary p-5">
+          <h1 className="text-2xl text-white font-bold	">
+            North MP
+          </h1>
+          <div className="bg-white py-2 px-5 round flex gap-1 items-center">
+          <i className="ri-shield-user-line "></i>
+            <span className='underline cursor-pointer'>
+              {user.name}
+            </span>
+            <i className="ri-logout-box-r-line ml-8 hover:cursor-pointer"
+            onClick={() => {
+              localStorage.removeItem('token')
+              navigate('/login')
+            }}
+            ></i>
+          </div>
+          </div>
+            {/* body */}
+            <div className='p-5'>
+
           {children}
         </div>
-      )}
-    </div>
+        </div>
+      )
+   
   )
 }
 
-export default ProtectedPage
+export default ProtectedPage;

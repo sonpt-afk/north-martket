@@ -3,6 +3,8 @@ import type { FormProps } from 'antd';
 import { Button, Form, Input, message } from 'antd';
 import { RegisterUser } from '../../apicalls/users';
 import { Link, useNavigate } from "react-router";
+import { SetLoader } from '../../redux/loadersSlice';
+import { useDispatch } from 'react-redux';
 
 type FieldType = {
   name: string;
@@ -13,9 +15,16 @@ type FieldType = {
 
 const Register: React.FC = () => {
   const nav = useNavigate();
+  const dispatch = useDispatch();
+
   const onFinish: FormProps<FieldType>['onFinish'] = async(values) => {
     try{
+            dispatch(SetLoader(true));
+      
       const response = await RegisterUser(values)
+      nav('/login')
+            dispatch(SetLoader(false));
+      
       if(response.success){
         message.success(response.message)
       }else{

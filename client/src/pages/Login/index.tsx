@@ -2,6 +2,8 @@ import React, { useEffect } from 'react';
 import { Button, Form, Input, message } from 'antd';
 import { Link, useNavigate } from 'react-router-dom';
 import { LoginUser } from '../../apicalls/users';
+import { useDispatch } from 'react-redux';
+import { SetLoader } from '../../redux/loadersSlice';
 
 interface LoginFormValues {
   email: string;
@@ -17,18 +19,21 @@ export interface LoginResponse {
 const Login: React.FC = () => {
   const [form] = Form.useForm<LoginFormValues>();
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
   const onFinish = async (values: LoginFormValues) => {
     try {
+      dispatch(SetLoader(true));
       const response = await LoginUser(values);
+      dispatch(SetLoader(false));
       if (response.success && response.data) {
         message.success(response.message);
         localStorage.setItem('token', response?.data);
         navigate('/');
       } else {
-        throw new Error(response.message);
+        throw new Error(response?.message);
       }
     } catch (error) {
+      dispatch(SetLoader(false));
       message.error(error instanceof Error ? error.message : 'An error occurred');
     }
   };

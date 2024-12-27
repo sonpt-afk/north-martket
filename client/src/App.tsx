@@ -1,25 +1,35 @@
-import React from 'react';
-import { Button } from 'antd';
-import {
-  BrowserRouter,
-  Routes,
-  Route,
-} from "react-router-dom";
-import Home from './pages/Home';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import ProtectedPage from './components/ProtectedPage';
+import React from 'react'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { useSelector } from 'react-redux'
+import Home from './pages/Home'
+import Login from './pages/Login'
+import Register from './pages/Register'
+import ProtectedPage from './components/ProtectedPage'
+import Spinner from './components/Spinner'
+import { RootState } from './redux/store'
 
 function App() {
+  const loading = useSelector((state: RootState) => state.loaders.loading);
+
   return (
-     <BrowserRouter>
-     <Routes>
-      <Route path="/" element={<ProtectedPage><Home /></ProtectedPage> } />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-     </Routes>
-     </BrowserRouter>
-  );
+    <>
+      {loading && <Spinner />}
+      <BrowserRouter>
+        <Routes>
+          <Route
+            path='/'
+            element={
+              <ProtectedPage>
+                <Home />
+              </ProtectedPage>
+            }
+          />
+          <Route path='/login' element={<Login />} />
+          <Route path='/register' element={<Register />} />
+        </Routes>
+      </BrowserRouter>
+    </>
+  )
 }
 
-export default App;
+export default App
