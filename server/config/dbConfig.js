@@ -1,13 +1,6 @@
 const mongoose = require('mongoose');
 const path = require('path');
 
-// Debug env vars
-console.log('Current directory:', __dirname);
-console.log('Environment variables:', {
-  MONGO_URL: process.env.MONGO_URL,
-  JWT_SECRET: process.env.JWT_SECRET
-});
-
 if (!process.env.MONGO_URL) {
     console.error('MongoDB connection string is not defined in .env file');
     process.exit(1);

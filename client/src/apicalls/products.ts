@@ -15,7 +15,7 @@ export const AddProduct = async (payload: Product): Promise<ApiResponse<Product>
 
 export const GetProduct = async (): Promise<ApiResponse<Product[]>> => {
   try {
-    const response = await axiosInstance.get<ApiResponse<Product[]>>('/api/products/get-product');
+    const response = await axiosInstance.get<ApiResponse<Product[]>>('/api/products/get-products');
     return response.data;
   } catch (error) {
     return {
@@ -24,3 +24,15 @@ export const GetProduct = async (): Promise<ApiResponse<Product[]>> => {
     };
   }
 };
+
+//delete a product
+export const DeleteProduct = async (id)=>{
+  try {
+    const response = await axiosInstance.delete(
+      `/api/products/delete-product/${id}`
+    );
+    return response?.data
+  } catch (error) {
+    return error?.message
+  }
+}

@@ -21,9 +21,9 @@ router.post('/add-product',authMiddleware,async(req,res)=>{
 });
 
 //get all products
-router.get('/products',async(req,res)=>{
+router.get('/get-products',async(req,res)=>{
     try{
-        const products = await Product.find()
+        const products = await Product.find().sort({createdAt: -1});
         res.send({
             success: true,
             products: products
@@ -35,5 +35,21 @@ router.get('/products',async(req,res)=>{
         })
     }
 });
+
+//delete a product
+router.post("/delete-product/:id", authMiddleware, async (req,res)=>{
+    try {
+        await Product.findByIdAndDelete(req.params.id);
+        res.send({
+            success: true,
+            message: "Product deleted successfully" 
+        })
+    } catch (error) {
+        res.send({
+                success: false,
+            message: error.message
+        })
+    }
+})
 
 module.exports = router;
