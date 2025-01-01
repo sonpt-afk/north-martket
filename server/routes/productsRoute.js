@@ -52,4 +52,19 @@ router.post("/delete-product/:id", authMiddleware, async (req,res)=>{
     }
 })
 
+//edit a product
+router.put("/edit-product/:id", authMiddleware, async(req,res)=>{
+    try{
+        await Product.findByIdAndUpdate(req.params.id, req.body);
+        res.send({
+            success: true,
+            message: "Product updated successfully"
+        })
+    }catch (error) {
+        res.send({
+                success: false,
+            message: error.message
+        })
+    }
+})
 module.exports = router;

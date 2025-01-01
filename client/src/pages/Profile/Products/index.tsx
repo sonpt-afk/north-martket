@@ -1,5 +1,5 @@
 import { Button, message, Table } from 'antd'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import ProductsForm from './ProductsForm'
 import { useDispatch } from 'react-redux'
 import { SetLoader } from '../../../redux/loadersSlice'
@@ -7,8 +7,9 @@ import { DeleteProduct, GetProduct } from '../../../apicalls/products'
 import moment from 'moment'
 
 const Products = () => {
-  const [showProductForm, setShowProductForm] = React.useState(false)
-  const [products, setProducts] = React.useState([])
+  const [showProductForm, setShowProductForm] = useState(false)
+  const [products, setProducts] = useState([])
+  const [selectedProduct, setSelectedProduct] = useState(null)
   const dispatch = useDispatch()
   const getData = async () => {
     try {
@@ -68,7 +69,13 @@ const Products = () => {
       render: (text, record) => {
         return (
           <div className='flex gap-5'>
-            <i className='ri-pencil-line hover:cursor-pointer'></i>
+            <i
+              className='ri-pencil-line hover:cursor-pointer'
+              onClick={() => {
+                setSelectedProduct(record)
+                setShowProductForm(true)
+              }}
+            ></i>
             <i
               className='ri-delete-bin-2-line hover:cursor-pointer '
               onClick={() => {
@@ -83,7 +90,13 @@ const Products = () => {
   return (
     <div>
       <div className='flex  justify-end'>
-        <Button type='default' onClick={() => setShowProductForm(true)}>
+        <Button
+          type='default'
+          onClick={() => {
+            setShowProductForm(true)
+            setSelectedProduct(null)
+          }}
+        >
           Add Product
         </Button>
       </div>
@@ -99,7 +112,14 @@ const Products = () => {
           }}
         />
       </div>{' '}
-      {showProductForm && <ProductsForm showProductForm={showProductForm} setShowProductForm={setShowProductForm} />}
+      {showProductForm && (
+        <ProductsForm
+          showProductForm={showProductForm}
+          setShowProductForm={setShowProductForm}
+          selectedProduct={selectedProduct}
+          getData={getData}
+        />
+      )}
     </div>
   )
 }
