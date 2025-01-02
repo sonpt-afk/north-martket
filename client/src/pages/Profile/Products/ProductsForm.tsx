@@ -1,9 +1,10 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input, Modal, Tabs, Form, Col, Row, message, Checkbox, Select } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../redux/store'
 import { SetLoader } from '../../../redux/loadersSlice'
 import { AddProduct, EditProduct } from '../../../apicalls/products'
+import Images from './Images'
 
 interface ProductsFormProps {
   showProductForm: boolean
@@ -41,6 +42,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   getData
 }) => {
   const formRef = React.useRef(null)
+  const [selectedTab = '1', setSelectedTab] = useState<string | undefined>('1')
   const dispatch = useDispatch()
   const { user } = useSelector((state: RootState) => state.users)
 
@@ -87,12 +89,14 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
         formRef.current?.submit()
       }}
       className='h-screen	'
+      footer={selectedTab === '2' && null}
+      {...(selectedTab === '2' && { footer: false })}
     >
       <div>
         <h1 className='text-primary text-xl text-center font-semibold'>
           {selectedProduct ? 'Edit Product' : 'Add Product'}
         </h1>
-        <Tabs defaultActiveKey='1'>
+        <Tabs defaultActiveKey='1' activeKey={selectedTab} onChange={(key) => setSelectedTab(key)}>
           <Tabs.TabPane tab='General' key='1'>
             <div className='max-h-[60vh] overflow-y-scroll '>
               <Form
@@ -161,8 +165,13 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
               </Form>
             </div>
           </Tabs.TabPane>
-          <Tabs.TabPane tab='Images' key='2'>
-            Content of Tab Pane 2
+          <Tabs.TabPane tab='Images' key='2' disabled={!selectedProduct}>
+            <Images
+              showProductForm={showProductForm}
+              selectedProduct={selectedProduct}
+              getData={getData}
+              setShowProductForm={setShowProductForm}
+            ></Images>
           </Tabs.TabPane>
         </Tabs>
       </div>
