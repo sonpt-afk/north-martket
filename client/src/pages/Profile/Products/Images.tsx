@@ -2,13 +2,12 @@ import { Button, message, Upload } from 'antd'
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { SetLoader } from '../../../redux/loadersSlice'
-import { UploadProductImage } from '../../../apicalls/products'
+import { EditProduct, UploadProductImage } from '../../../apicalls/products'
 import { ImageUploadPayload } from '../../../types/image'
 
 interface ImagesProps {
-  showProductForm: boolean
   setShowProductForm: (show: boolean) => void
-  selectedProduct: object | null
+  selectedProduct: any
   getData: () => Promise<void>
 }
 
@@ -46,8 +45,46 @@ const Images: React.FC<ImagesProps> = ({ selectedProduct, setSelectedProduct, se
     }
   }
 
+  const deleteImage = async (image: string) => {
+    try {
+      dispatch(SetLoader(true))
+      const updatedImages = images.filter((img) => img !== image)
+      const updatedProduct = {
+        selectedProduct,
+        images: updatedImages
+      }
+      const response = await EditProduct(selectedProduct._id, updatedProduct)
+      if (response.success) {
+        message.success(response.message)
+        setImages(updatedImages)
+        getData()
+      } else {
+        throw new Error(response.message)
+      }
+      setImages(updatedImages)
+      dispatch(SetLoader(false))
+    } catch (error) {
+      dispatch(SetLoader(false))
+      message.error(error?.message)
+    }
+  }
   return (
     <div>
+      <div className='flex gap-5 mb-5'>
+        {images?.map((image) => {
+          return (
+            <div className='flex gap-2 border border-solid border-gray-300 rounded items-end p-3 p-5'>
+              <img src={image} alt='' className='h-20 w-20 object-cover' />
+              <i
+                className='ri-delete-bin-2-line hover:cursor-pointer '
+                onClick={() => {
+                  deleteImage(image)
+                }}
+              ></i>
+            </div>
+          )
+        })}
+      </div>
       <Upload
         listType='picture'
         beforeUpload={() => false}
@@ -57,16 +94,6 @@ const Images: React.FC<ImagesProps> = ({ selectedProduct, setSelectedProduct, se
         }}
         showUploadList={showPreview}
       >
-        <div className='flex gap-5 mb-5'>
-          {images?.map((image) => {
-            return (
-              <div className='flex gap-2 border border-solid border-gray-300 rounded items-end p-3 p-5'>
-                <img src={image} alt='' className='h-20 w-20 object-cover' />
-                <i className='ri-delete-bin-2-line hover:cursor-pointer ' onClick={() => {}}></i>
-              </div>
-            )
-          })}
-        </div>
         <Button type='dashed'>Upload Image</Button>
       </Upload>
 

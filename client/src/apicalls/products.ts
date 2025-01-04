@@ -53,6 +53,17 @@ export const EditProduct = async (id, payload)=>{
   }
 }
 
+//get a product by id
+export const GetProductById = async(id:string) =>{
+  try {
+    const response = await axiosInstance.get(`/api/products/get-product-by-id/${id}`);
+    return response?.data
+  } catch (error) {
+    return error?.message
+    
+  }
+}
+
 //upload product image
 export const UploadProductImage = async (payload: ImageUploadPayload): Promise<ImageUploadResponse> => {
   try {

@@ -21,11 +21,10 @@ const Products = () => {
       })
       dispatch(SetLoader(false))
       if (response.success) {
-        setProducts(response?.products)
+        setProducts(response?.data)
       }
     } catch (error) {
       dispatch(SetLoader(false))
-      console.log('err', error)
       message.error(error?.message)
     }
   }

@@ -9,6 +9,7 @@ import Spinner from './components/Spinner'
 import { RootState } from './redux/store'
 import Profile from './pages/Profile'
 import Admin from './pages/Admin'
+import ProductInfo from './pages/ProductInfo'
 
 function App() {
   const loading = useSelector((state: RootState) => state.loaders.loading)
@@ -39,6 +40,14 @@ function App() {
             element={
               <ProtectedPage>
                 <Admin></Admin>
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='/product/:id'
+            element={
+              <ProtectedPage>
+                <ProductInfo></ProductInfo>
               </ProtectedPage>
             }
           />

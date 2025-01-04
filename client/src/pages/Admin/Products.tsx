@@ -7,7 +7,7 @@ import moment from 'moment'
 
 const Products = () => {
   const [showProductForm, setShowProductForm] = useState(false)
-  const [products, setProducts] = useState([])
+  const [products, setProducts] = useState<Product[]>([])
   const [selectedProduct, setSelectedProduct] = useState(null)
 
   const dispatch = useDispatch()
@@ -17,12 +17,11 @@ const Products = () => {
       const response = await GetProduct(null)
       dispatch(SetLoader(false))
       if (response.success) {
-        setProducts(response?.products)
+        setProducts(response?.data)
       }
     } catch (error) {
       dispatch(SetLoader(false))
-      console.log('err', error)
-      message.error(error?.message)
+      message.error((error as Error)?.message)
     }
   }
 

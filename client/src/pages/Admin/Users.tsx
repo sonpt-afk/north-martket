@@ -20,7 +20,6 @@ const Users = () => {
       }
     } catch (error) {
       dispatch(SetLoader(false))
-      console.log('err', error)
       message.error(error?.message)
     }
   }

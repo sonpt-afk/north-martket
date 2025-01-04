@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { Input, Modal, Tabs, Form, Col, Row, message, Checkbox, Select } from 'antd'
+import { Input, Modal, Tabs, Form, Col, Row, message, Checkbox, Select, Button } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../redux/store'
 import { SetLoader } from '../../../redux/loadersSlice'
@@ -84,10 +84,6 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
       onCancel={() => setShowProductForm(false)}
       centered
       width={800}
-      okText='Save'
-      onOk={() => {
-        formRef.current?.submit()
-      }}
       className='h-screen	'
       footer={selectedTab === '2' && null}
       {...(selectedTab === '2' && { footer: false })}
@@ -167,13 +163,20 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
           </Tabs.TabPane>
           <Tabs.TabPane tab='Images' key='2' disabled={!selectedProduct}>
             <Images
-              showProductForm={showProductForm}
               selectedProduct={selectedProduct}
               getData={getData}
               setShowProductForm={setShowProductForm}
             ></Images>
           </Tabs.TabPane>
         </Tabs>
+        {selectedTab === '1' && (
+          <div className='flex justify-end gap-4 mt-4 pt-4 border-t'>
+            <Button onClick={() => setShowProductForm(false)}>Cancel</Button>
+            <Button type='primary' onClick={() => formRef.current?.submit()}>
+              {selectedProduct ? 'Update' : 'Save'}
+            </Button>
+          </div>
+        )}
       </div>
     </Modal>
   )
