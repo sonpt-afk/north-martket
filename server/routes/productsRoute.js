@@ -25,19 +25,26 @@ router.post('/add-product',authMiddleware,async(req,res)=>{
 });
 
 //get all products
-router.get('/get-products',async(req,res)=>{
-    try{
-        const products = await Product.find().sort({createdAt: -1});
-        res.send({
-            success: true,
-            products: products
-        })
-    }catch(error){
-        res.send({
-            success: false,
-            message: error.message 
-        })
-    }
+router.post('/get-products', async(req,res) => {
+  try {
+      const {seller, categories = [], age=[]} = req.body;
+      let filters = {}
+      if (seller) {
+          filters.seller = seller
+      }
+      const products = await Product.find(filters)
+          .populate('seller', 'name email') // Specify which fields to populate
+          .sort({createdAt: -1});
+      res.send({
+          success: true,
+          products
+      })
+  } catch(error) {
+      res.send({
+          success: false,
+          message: error.message 
+      })
+  }
 });
 
 //delete a product
@@ -63,6 +70,22 @@ router.put("/edit-product/:id", authMiddleware, async(req,res)=>{
         res.send({
             success: true,
             message: "Product updated successfully"
+        })
+    }catch (error) {
+        res.send({
+                success: false,
+            message: error.message
+        })
+    }
+})
+
+//update product status
+router.put("/update-product-status/:id", authMiddleware, async(req,res)=>{
+    try{
+        await Product.findByIdAndUpdate(req.params.id, {status: req.body.status});
+        res.send({
+            success: true,
+            message: "Product status updated successfully"
         })
     }catch (error) {
         res.send({

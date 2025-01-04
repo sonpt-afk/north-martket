@@ -14,9 +14,9 @@ export const AddProduct = async (payload: Product): Promise<ApiResponse<Product>
   }
 };
 
-export const GetProduct = async (): Promise<ApiResponse<Product[]>> => {
+export const GetProduct = async (filters): Promise<ApiResponse<Product[]>> => {
   try {
-    const response = await axiosInstance.get<ApiResponse<Product[]>>('/api/products/get-products');
+    const response = await axiosInstance.post<ApiResponse<Product[]>>('/api/products/get-products',filters);
     return response.data;
   } catch (error) {
     return {
@@ -77,3 +77,18 @@ export const UploadProductImage = async (payload: ImageUploadPayload): Promise<I
     };
   }
 };
+
+//update product status
+export const UpdateProductStatus = async (id: string, status: string): Promise<ApiResponse<null>> => {
+  try {
+    const response = await axiosInstance.put(`/api/products/update-product-status/${id}`, {
+      status: status
+    })
+    return response.data
+  } catch (error) {
+    return {
+      success: false,
+      message: error instanceof Error ? error.message : 'An error occurred'
+    }
+  }
+}

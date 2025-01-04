@@ -45,9 +45,9 @@ const productSchema = new mongoose.Schema({
         required: true,
         default: false
     },
-    seller:{
+    seller: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
+        ref: 'users', // Change this to match your User model name
         required: true
     },
     status:{
@@ -58,5 +58,5 @@ const productSchema = new mongoose.Schema({
 },{timestamps: true}
 )
 
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model('products', productSchema);
 

@@ -8,9 +8,10 @@ import ProtectedPage from './components/ProtectedPage'
 import Spinner from './components/Spinner'
 import { RootState } from './redux/store'
 import Profile from './pages/Profile'
+import Admin from './pages/Admin'
 
 function App() {
-  const loading = useSelector((state: RootState) => state.loaders.loading);
+  const loading = useSelector((state: RootState) => state.loaders.loading)
 
   return (
     <>
@@ -22,7 +23,6 @@ function App() {
             element={
               <ProtectedPage>
                 <Home />
-
               </ProtectedPage>
             }
           />
@@ -30,16 +30,20 @@ function App() {
             path='/profile'
             element={
               <ProtectedPage>
-                      <Profile></Profile>
-
-
+                <Profile></Profile>
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='/admin'
+            element={
+              <ProtectedPage>
+                <Admin></Admin>
               </ProtectedPage>
             }
           />
           <Route path='/login' element={<Login />} />
           <Route path='/register' element={<Register />} />
-         
-
         </Routes>
       </BrowserRouter>
     </>

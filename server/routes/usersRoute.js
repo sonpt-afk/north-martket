@@ -43,6 +43,10 @@ router.post('/login', async(req,res) =>{
         if(!user){
             throw new Error('User not found');
         }
+        // if user is inactive
+        if(user?.status !== 'active'){
+            throw new Error("User account is blocked, please contact admin")
+        }
         //compare password
         const validPassword = await bcrypt.compare(req.body.password, user.password);
         if(!validPassword){
@@ -84,6 +88,37 @@ router.get('/get-current-user',authMiddleware, async(req,res) =>{
     }
 })
 
+//get all users
+router.get('/get-users',authMiddleware, async(req,res) =>{
+    try{
+        const users = await User.find();
+        res.send({
+            success: true,
+            message: 'users fetched successfully',
+            data: users
+        })
+    }catch(error){
+        res.send({
+            success: false,
+            message: error.message
+        })
+    }
+})
 
+//update users status
+router.put('/update-user-status/:id',authMiddleware, async(req,res) =>{
+    try{
+        await User.findByIdAndUpdate(req.params.id, {status: req.body.status});
+        res.send({
+            success: true,
+            message: 'User status updated successfully'
+        })
+    }catch(error){
+        res.send({
+            success: false,
+            message: error.message
+        })
+    }
+})
 
 module.exports = router;
