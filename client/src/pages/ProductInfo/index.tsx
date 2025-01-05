@@ -102,9 +102,32 @@ const ProductInfo = () => {
           <div className='text-xl'>Contact: {product?.seller?.email}</div>
           <Divider></Divider>
           <div className='text-2xl font-bold text-gray-500'>Bids</div>
-          <Button onClick={() => setShowAddNewBid(!showAddNewBid)} disabled={user?._id === product?.seller?._id}>
+          <Button
+            disabled={user?._id === product?.seller?._id}
+            className={`${user?._id === product?.seller?._id ? 'bg-gray-300 backdrop-blur-sm' : 'bg-primary text-white text-2xl font-bold'}`}
+            onClick={() => setShowAddNewBid(!showAddNewBid)}
+          >
             New Bid
           </Button>
+          {product?.showBidsOnProductPage &&
+            product?.bids?.map((bid) => {
+              return (
+                <div className=' mt-2 border border-solid border-gray-500 p-4 rounded'>
+                  <div className='flex justify-between'>
+                    <span>Name</span>
+                    <span>{bid?.buyer?.name}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Bid Amount</span>
+                    <span>$ {bid?.bidAmount}</span>
+                  </div>
+                  <div className='flex justify-between'>
+                    <span>Bid Placed On</span>
+                    <span>{moment(bid?.createdAt).format('DD-MM-YYYY')}</span>
+                  </div>
+                </div>
+              )
+            })}
         </div>
 
         {showAddNewBid && (

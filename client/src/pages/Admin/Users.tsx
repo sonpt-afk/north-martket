@@ -47,14 +47,6 @@ const Users = () => {
   const columns = [
     { title: 'Name', dataIndex: 'name', align: 'center' },
     { title: 'Email', dataIndex: 'email', align: 'center' },
-    // {
-    //   title: 'Created at',
-    //   dataIndex: 'createdAt',
-    //   align: 'center',
-    //   render: (text, record) => {
-    //     moment(record?.createdAt).format('DD-MM-YYYY hh:mm:ss')
-    //   }
-    // },
     {
       title: 'Status',
       dataIndex: 'status',

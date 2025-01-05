@@ -47,8 +47,8 @@ const Home = () => {
         {products?.map((item) => {
           return (
             <div
-              className='border border-gray-300 p-4 rounded border-solid flex flex-col gap-5 key={product?._id}
-            '
+              className='border cursor-pointer border-gray-300 p-4 rounded border-solid flex flex-col gap-5'
+              key={item?._id}
               onClick={() => navigate(`/product/${item?._id}`)}
             >
               <img src={item?.images[0]} className='w-full h-40 object-cover' alt='itemAva' />

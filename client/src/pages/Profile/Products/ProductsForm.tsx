@@ -13,6 +13,23 @@ interface ProductsFormProps {
   getData: () => Promise<void>
 }
 
+interface Product {
+  _id: string
+  name: string
+  price: number
+  description: string
+  category: string
+  age: number
+  images: string[]
+  billAvailable: boolean
+  warrantyAvailable: boolean
+  accessoriesAvailable: boolean
+  boxAvailable: boolean
+  showBidsOnProductPage: boolean
+  seller: string
+  status: string
+}
+
 const addtionalThings = [
   {
     label: 'Bill Available',
@@ -41,7 +58,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   selectedProduct,
   getData
 }) => {
-  const formRef = React.useRef(null)
+  const [form] = Form.useForm()
   const [selectedTab = '1', setSelectedTab] = useState<string | undefined>('1')
   const dispatch = useDispatch()
   const { user } = useSelector((state: RootState) => state.users)
@@ -73,9 +90,17 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
 
   useEffect(() => {
     if (selectedProduct) {
-      formRef.current.setFieldsValue(selectedProduct)
+      const formValues = {
+        ...selectedProduct,
+        billAvailable: Boolean(selectedProduct?.billAvailable),
+        warrantyAvailable: Boolean(selectedProduct?.warrantyAvailable),
+        accessoriesAvailable: Boolean(selectedProduct?.accessoriesAvailable),
+        boxAvailable: Boolean(selectedProduct?.boxAvailable),
+        showBidsOnProductPage: Boolean(selectedProduct?.showBidsOnProductPage)
+      }
+      form.setFieldsValue(formValues)
     }
-  }, [selectedProduct])
+  }, [selectedProduct, form])
 
   return (
     <Modal
@@ -97,10 +122,15 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
             <div className='max-h-[60vh] overflow-y-scroll '>
               <Form
                 layout='vertical'
-                ref={formRef}
+                form={form}
                 onFinish={onFinish}
                 initialValues={{
-                  category: categories[0] // Set default value
+                  category: categories[0],
+                  billAvailable: false,
+                  warrantyAvailable: false,
+                  accessoriesAvailable: false,
+                  boxAvailable: false,
+                  showBidsOnProductPage: false
                 }}
               >
                 <Form.Item label='Name' name='name' rules={rules}>
@@ -143,18 +173,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                       className='flex items-center gap-2 mb-2'
                     >
                       <div className='flex flex-col gap-3 items-center space-x-2'>
-                        <span>{item.label}</span>
-
-                        <Input
-                          type='checkbox'
-                          value={item?.name}
-                          onChange={(e) => {
-                            formRef.current.setFieldsValue({
-                              [item?.name]: e.target.checked
-                            })
-                          }}
-                          checked={formRef.current?.getFieldValue(item.name)}
-                        ></Input>
+                        <Checkbox defaultChecked={selectedProduct?.[item.name]}>{item.label}</Checkbox>
                       </div>
                     </Form.Item>
                   ))}
@@ -163,23 +182,11 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                 <Row>
                   <Col span={8}>
                     <Form.Item
-                      label='Show Bids on Product Page'
                       name='showBidsOnProductPage'
                       valuePropName='checked'
                       className='flex items-center gap-2 mb-2'
                     >
-                      <div className='flex items-center space-x-2'>
-                        <Input
-                          type='checkbox'
-                          onChange={(e) => {
-                            formRef.current.setFieldsValue({
-                              showBidsOnProductPage: e.target.checked
-                            })
-                          }}
-                          checked={formRef.current?.getFieldValue('showBidsOnProductPage')}
-                          style={{ width: 50, marginLeft: 20 }}
-                        ></Input>
-                      </div>
+                      <Checkbox>Show Bids on Product Page</Checkbox>
                     </Form.Item>
                   </Col>
                 </Row>
@@ -196,8 +203,10 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
         </Tabs>
         {selectedTab === '1' && (
           <div className='flex justify-end gap-4 mt-4 pt-4 border-t'>
-            <Button onClick={() => setShowProductForm(false)}>Cancel</Button>
-            <Button type='primary' onClick={() => formRef.current?.submit()}>
+            <Button size='large' onClick={() => setShowProductForm(false)} className='min-w-[100px]'>
+              Cancel
+            </Button>
+            <Button type='primary' size='large' onClick={() => form.submit()} className='min-w-[100px]'>
               {selectedProduct ? 'Update' : 'Save'}
             </Button>
           </div>
