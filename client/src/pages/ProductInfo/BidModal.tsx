@@ -1,13 +1,43 @@
-import { Form, Input, Modal } from 'antd'
+import { Form, Input, message, Modal } from 'antd'
 import React, { useRef } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { SetLoader } from '../../redux/loadersSlice'
+import { PlaceNewBid } from '../../apicalls/products'
 
-const BidModal = ({ showBidModal, setShowBidModal, product, reloadData }) => {
+interface BidModalProps {
+  showBidModal: boolean
+  setShowBidModal: (show: boolean) => void
+  product: { _id: string; seller: { _id: string } }
+  reloadData: () => void
+}
+
+const BidModal: React.FC<BidModalProps> = ({ showBidModal, setShowBidModal, product, reloadData }) => {
   const formRef = useRef(null)
   const rules = [{ required: true, message: 'Required' }]
+  const dispatch = useDispatch()
+  const { user } = useSelector((state: any) => state.users)
 
-  const onFinish = async (values) => {
+  const onFinish = async (values: any) => {
     try {
-    } catch (error) {}
+      dispatch(SetLoader(true))
+      const response = await PlaceNewBid({
+        ...values,
+        product: product?._id,
+        seller: product?.seller?._id,
+        buyer: user?._id
+      })
+      dispatch(SetLoader(false))
+      if (response.success) {
+        message.success('Place bid successfully')
+        reloadData()
+        setShowBidModal(false)
+      } else {
+        throw new Error(response.message)
+      }
+    } catch (error: any) {
+      message.error(error.message)
+      dispatch(SetLoader(false))
+    }
   }
   return (
     <Modal

@@ -5,13 +5,15 @@ import { useDispatch, useSelector } from 'react-redux'
 import { SetLoader } from '../../../redux/loadersSlice'
 import { DeleteProduct, GetProduct } from '../../../apicalls/products'
 import moment from 'moment'
+import Bids from './Bids'
 
 const Products = () => {
   const [showProductForm, setShowProductForm] = useState(false)
   const [products, setProducts] = useState([])
   const [selectedProduct, setSelectedProduct] = useState(null)
   const { user } = useSelector((state) => state.users)
-
+  const [showBids, setShowBids] = useState(false)
+  const [bids, setBids] = useState([])
   const dispatch = useDispatch()
   const getData = async () => {
     try {
@@ -71,7 +73,7 @@ const Products = () => {
       align: 'center',
       render: (text, record) => {
         return (
-          <div className='flex gap-5'>
+          <div className='flex gap-5 justify-center items-center'>
             <i
               className='ri-pencil-line hover:cursor-pointer'
               onClick={() => {
@@ -85,6 +87,16 @@ const Products = () => {
                 deleteProduct(record?._id)
               }}
             ></i>
+
+            <span
+              className='underline cursor-pointer'
+              onClick={() => {
+                setSelectedProduct(record)
+                setShowBids(true)
+              }}
+            >
+              Show Bids
+            </span>
           </div>
         )
       }
@@ -123,6 +135,7 @@ const Products = () => {
           getData={getData}
         />
       )}
+      {showBids && <Bids showBidModal={showBids} setShowBidModal={setShowBids} selectedProduct={selectedProduct} />}
     </div>
   )
 }

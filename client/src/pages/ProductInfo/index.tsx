@@ -3,13 +3,14 @@ import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
 import { SetLoader } from '../../redux/loadersSlice'
-import { GetProduct, GetProductById } from '../../apicalls/products'
+import { GetAllBids, GetProduct, GetProductById } from '../../apicalls/products'
 import Divider from '../../components/Divider'
 import { useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment'
 import BidModal from './BidModal'
 
 const ProductInfo = () => {
+  const { user } = useSelector((state) => state.users)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [showAddNewBid, setShowAddNewBid] = useState(false)
   const [product, setProduct] = useState(null)
@@ -23,7 +24,11 @@ const ProductInfo = () => {
         const response = await GetProductById(id)
         dispatch(SetLoader(false))
         if (response.success) {
-          setProduct(response?.data)
+          const bidsResponse = await GetAllBids({ product: id })
+          setProduct({
+            ...response.data,
+            bids: bidsResponse.data
+          })
         }
       } else {
         dispatch(SetLoader(false))
@@ -97,7 +102,9 @@ const ProductInfo = () => {
           <div className='text-xl'>Contact: {product?.seller?.email}</div>
           <Divider></Divider>
           <div className='text-2xl font-bold text-gray-500'>Bids</div>
-          <Button onClick={() => setShowAddNewBid(!showAddNewBid)}>New Bid</Button>
+          <Button onClick={() => setShowAddNewBid(!showAddNewBid)} disabled={user?._id === product?.seller?._id}>
+            New Bid
+          </Button>
         </div>
 
         {showAddNewBid && (
