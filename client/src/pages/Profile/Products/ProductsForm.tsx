@@ -134,7 +134,7 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                   </Col>
                 </Row>
 
-                <div className='flex gap-10'>
+                <div className='flex gap-10 mb-5'>
                   {addtionalThings.map((item) => (
                     <Form.Item
                       key={item.name}
@@ -142,7 +142,9 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                       valuePropName='checked'
                       className='flex items-center gap-2 mb-2'
                     >
-                      <div className='flex items-center space-x-2'>
+                      <div className='flex flex-col gap-3 items-center space-x-2'>
+                        <span>{item.label}</span>
+
                         <Input
                           type='checkbox'
                           value={item?.name}
@@ -153,11 +155,34 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
                           }}
                           checked={formRef.current?.getFieldValue(item.name)}
                         ></Input>
-                        <span>{item.label}</span>
                       </div>
                     </Form.Item>
                   ))}
                 </div>
+
+                <Row>
+                  <Col span={8}>
+                    <Form.Item
+                      label='Show Bids on Product Page'
+                      name='showBidsOnProductPage'
+                      valuePropName='checked'
+                      className='flex items-center gap-2 mb-2'
+                    >
+                      <div className='flex items-center space-x-2'>
+                        <Input
+                          type='checkbox'
+                          onChange={(e) => {
+                            formRef.current.setFieldsValue({
+                              showBidsOnProductPage: e.target.checked
+                            })
+                          }}
+                          checked={formRef.current?.getFieldValue('showBidsOnProductPage')}
+                          style={{ width: 50, marginLeft: 20 }}
+                        ></Input>
+                      </div>
+                    </Form.Item>
+                  </Col>
+                </Row>
               </Form>
             </div>
           </Tabs.TabPane>
