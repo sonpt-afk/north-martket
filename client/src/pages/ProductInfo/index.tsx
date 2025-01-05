@@ -1,4 +1,4 @@
-import { message } from 'antd'
+import { Button, message } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -6,9 +6,12 @@ import { SetLoader } from '../../redux/loadersSlice'
 import { GetProduct, GetProductById } from '../../apicalls/products'
 import Divider from '../../components/Divider'
 import { useNavigate, useParams } from 'react-router-dom'
+import moment from 'moment'
+import BidModal from './BidModal'
 
 const ProductInfo = () => {
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
+  const [showAddNewBid, setShowAddNewBid] = useState(false)
   const [product, setProduct] = useState(null)
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -36,11 +39,11 @@ const ProductInfo = () => {
     getData()
   }, [])
 
-  console.log('product', product)
+  const currentYear = moment().year()
 
   return (
     product && (
-      <div className='grid grid-cols-2 gap-5'>
+      <div className='grid lg:grid-cols-2 gap-5 sm:grid-cols-1 xs:grid-cols-1 md:grid-cols-2'>
         {/* images */}
         <div className='flex flex-col gap-2'>
           <div className='text-2xl font-bold'>{product?.name}</div>
@@ -48,7 +51,7 @@ const ProductInfo = () => {
           <img
             src={product?.images[selectedImageIndex]}
             alt='itemAvatar'
-            className='w-full h-100 object-cover rounded-md'
+            className='w-full h-100 object-cover rounded-md sm:h-50 xs:h-50'
           />
           <div className='flex gap-5'>
             {product.images.map((image, index) => {
@@ -65,6 +68,9 @@ const ProductInfo = () => {
               )
             })}
           </div>
+          <div className='text-xl mt-8' id='item-date'>
+            Added on: {moment(product?.createdAt).format('DD-MM-YYYY')}
+          </div>
         </div>
 
         {/* details */}
@@ -78,7 +84,7 @@ const ProductInfo = () => {
             </span>
           </div>
           <div className='text-xl'>Category: {product?.category}</div>
-          <div className='text-xl'>Age: {product?.age}</div>
+          <div className='text-xl'>Purchase year: {currentYear - product?.age}</div>
           <div className='text-xl'>Description: {product?.description}</div>
           <div className='text-xl'>Accessories available: {product?.accessoriesAvailable == true ? 'Yes' : 'No'}</div>
           <div className='text-xl'>Bill available: {product?.billAvailable == true ? 'Yes' : 'No'}</div>
@@ -89,7 +95,19 @@ const ProductInfo = () => {
 
           <div className='text-xl'>Seller: {product?.seller?.name}</div>
           <div className='text-xl'>Contact: {product?.seller?.email}</div>
+          <Divider></Divider>
+          <div className='text-2xl font-bold text-gray-500'>Bids</div>
+          <Button onClick={() => setShowAddNewBid(!showAddNewBid)}>New Bid</Button>
         </div>
+
+        {showAddNewBid && (
+          <BidModal
+            setShowBidModal={setShowAddNewBid}
+            showBidModal={showAddNewBid}
+            product={product}
+            reloadData={getData}
+          />
+        )}
       </div>
     )
   )
