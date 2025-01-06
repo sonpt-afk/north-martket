@@ -13,23 +13,6 @@ interface ProductsFormProps {
   getData: () => Promise<void>
 }
 
-interface Product {
-  _id: string
-  name: string
-  price: number
-  description: string
-  category: string
-  age: number
-  images: string[]
-  billAvailable: boolean
-  warrantyAvailable: boolean
-  accessoriesAvailable: boolean
-  boxAvailable: boolean
-  showBidsOnProductPage: boolean
-  seller: string
-  status: string
-}
-
 const addtionalThings = [
   {
     label: 'Bill Available',

@@ -35,3 +35,7 @@ button {
 i {
   font-size: 20px;
 }
+
+.max-width {
+  max-width: max-content !important;
+}
