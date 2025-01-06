@@ -1,5 +1,6 @@
 const router= require('express').Router();
 const Product = require('../models/productModel');
+const User = require('../models/userModel'); // Add this line
 
 const authMiddleware = require('../middlewares/authMiddleware');
 const cloudinary = require('../config/cloudinaryConfig');
@@ -7,11 +8,28 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 
+const Notification = require('../models/notificationsModel');
 //add a new product
 router.post('/add-product',authMiddleware,async(req,res)=>{
     try{
         const newProduct = new Product(req.body)
             await newProduct.save()
+
+            //send noti to admin
+            const admins = await User.find({role: 'admin'})
+            admins.forEach(async (admin) =>{
+              const newNotification = new Notification({
+                user: admin._id,
+                message: `New product added by ${req.user.name}`,
+                onClick: `/admin`,
+                title: 'New Product',
+                read: false
+              })
+            
+              await newNotification.save()
+            })
+
+
             res.send({
                 success: true,
                 message: 'Product added successfully',
@@ -108,20 +126,48 @@ router.put("/edit-product/:id", authMiddleware, async(req,res)=>{
 })
 
 //update product status
-router.put("/update-product-status/:id", authMiddleware, async(req,res)=>{
-    try{
-        await Product.findByIdAndUpdate(req.params.id, {status: req.body.status});
-        res.send({
-            success: true,
-            message: "Product status updated successfully"
-        })
-    }catch (error) {
-        res.send({
-                success: false,
-            message: error.message
-        })
-    }
-})
+router.put("/update-product-status/:id", authMiddleware, async(req, res) => {
+  try {
+      const { id } = req.params;
+      const { status } = req.body;
+      const userId = req.body.userId; // Get userId from middleware
+
+      const updatedProduct = await Product.findByIdAndUpdate(
+          id, 
+          { status },
+          { new: true }
+      ).populate('seller');
+
+      if (!updatedProduct) {
+          return res.status(404).send({
+              success: false,
+              message: "Product not found"
+          });
+      }
+
+      // Create notification for seller
+      const newNotification = new Notification({
+          user: updatedProduct.seller._id,
+          message: `Your product ${updatedProduct.name} has been ${status}`,
+          title: 'Product Status Updated',
+          onClick: `/profile`,
+          read: false
+      });
+
+      await newNotification.save();
+
+      res.send({
+          success: true,
+          message: "Product status updated successfully"
+      });
+  } catch (error) {
+      console.error('Update product status error:', error);
+      res.status(500).send({
+          success: false,
+          message: error.message
+      });
+  }
+});
 
 // Configure multer storage
 const storage = multer.diskStorage({

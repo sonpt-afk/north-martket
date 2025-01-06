@@ -92,20 +92,7 @@ function ProtectedPage({ children }: ProtectedPageProps) {
           >
             North MP
           </h1>
-          <div className='bg-white py-2 px-5 round flex gap-1 items-center'>
-            <i className='ri-shield-user-line '></i>
-            <span
-              className='underline cursor-pointer'
-              onClick={() => {
-                if (user?.role === 'user') {
-                  navigate('/profile')
-                } else {
-                  navigate('/admin')
-                }
-              }}
-            >
-              {user.name}
-            </span>
+          <div className='bg-white py-2 px-5 round flex gap-8 items-center'>
             <div>
               <Badge
                 count={notifications?.filter((noti) => !noti?.read).length}
@@ -117,6 +104,21 @@ function ProtectedPage({ children }: ProtectedPageProps) {
               >
                 <Avatar shape='circle' size='default' icon={<i className='ri-notification-4-line'></i>} />
               </Badge>
+            </div>
+            <div className='gap-2 flex items-center'>
+              <i className='ri-shield-user-line '></i>
+              <span
+                className='underline cursor-pointer'
+                onClick={() => {
+                  if (user?.role === 'user') {
+                    navigate('/profile')
+                  } else {
+                    navigate('/admin')
+                  }
+                }}
+              >
+                {user.name}
+              </span>
             </div>
             <i
               className='ri-logout-box-r-line ml-8 hover:cursor-pointer'

@@ -1,26 +1,27 @@
 import { message, Modal, Table } from 'antd'
 import React, { useEffect, useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { GetAllBids } from '../../../apicalls/products'
+import { useDispatch, useSelector } from 'react-redux'
 import { SetLoader } from '../../../redux/loadersSlice'
-import moment from 'moment'
+import { GetAllBids } from '../../../apicalls/products'
 
 interface BidProps {
   setShowBidModal: (show: boolean) => void
   showBidModal: boolean
   selectedProduct: object | null
 }
-const Bids: React.FC<BidProps> = ({ showBidModal, setShowBidModal, selectedProduct }) => {
+const UserBids: React.FC<BidProps> = ({ showBidModal, setShowBidModal, selectedProduct }) => {
   const [bidsData, setBidsData] = useState([])
   const dispatch = useDispatch()
+  const { user } = useSelector((state) => state.users)
   const getData = async () => {
     try {
       dispatch(SetLoader(true))
-      const response = await GetAllBids({ product: selectedProduct?._id })
+      const response = await GetAllBids({
+        buyer: user._id
+      })
       dispatch(SetLoader(false))
       if (response.success) {
         setBidsData(response.data)
-        console.log(response.data)
       }
     } catch (error) {
       dispatch(SetLoader(false))
@@ -29,28 +30,36 @@ const Bids: React.FC<BidProps> = ({ showBidModal, setShowBidModal, selectedProdu
   }
 
   useEffect(() => {
-    if (selectedProduct) {
-      getData()
-    }
-  }, [selectedProduct])
+    getData()
+  }, [])
+
   const columns = [
     {
-      title: 'Name',
-      dataIndex: 'name',
+      title: 'Product',
+      dataIndex: 'product',
       align: 'center',
       render: (text, record) => {
-        return record?.buyer?.name
+        return record?.product?.name
       }
     },
     { title: 'Bid Amount', dataIndex: 'bidAmount', align: 'center' },
     {
-      title: 'Bid Date',
-      dataIndex: 'createdAt',
+      title: 'Seller',
+      dataIndex: 'seller',
       align: 'center',
-      render: (record) => {
-        return moment(record).format('DD/MM/YYYY, h:mm:ss a')
+      render: (text, record) => {
+        return record?.seller?.name
       }
     },
+    {
+      title: 'Offered Price',
+      dataIndex: 'offerdprice',
+      align: 'center',
+      render: (text, record) => {
+        return record?.product?.price
+      }
+    },
+
     {
       title: 'Message',
       dataIndex: 'message'
@@ -69,11 +78,12 @@ const Bids: React.FC<BidProps> = ({ showBidModal, setShowBidModal, selectedProdu
     }
   ]
   return (
-    <Modal footer={null} title='Bids' open={showBidModal} onCancel={() => setShowBidModal(false)} centered width={800}>
-      <h1 className='text-xl text-primary font-semibold'>Product name: {selectedProduct?.name}</h1>
-      <Table columns={columns} dataSource={bidsData}></Table>
-    </Modal>
+    <>
+      <div className='flex flex-col gap-3'>
+        <Table columns={columns} dataSource={bidsData}></Table>
+      </div>
+    </>
   )
 }
 
-export default Bids
+export default UserBids
