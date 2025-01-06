@@ -6,12 +6,18 @@ import { User as UserType } from '../types/user'
 import { useDispatch } from 'react-redux'
 import { SetLoader } from '../redux/loadersSlice'
 import { SetUser } from '../redux/usersSlice'
+import { Badge, Avatar } from 'antd'
+import Notifications from './Notifications'
+import { GetAllNotifications, ReadAllNotifications } from '../apicalls/notifications'
+import { Notification } from '../types/notification'
 
 interface ProtectedPageProps {
   children: ReactNode
 }
 
 function ProtectedPage({ children }: ProtectedPageProps) {
+  const [notifications, setNotification] = useState<Notification[]>([])
+  const [showNotifications, setShowNotifications] = useState(false)
   const [user, setUser] = useState<UserType | null>(null)
   const navigate = useNavigate()
   const dispatch = useDispatch()
@@ -35,19 +41,48 @@ function ProtectedPage({ children }: ProtectedPageProps) {
     }
   }
 
+  const getNotifications = async () => {
+    try {
+      const response = await GetAllNotifications()
+      if (response.success) {
+        setNotification(response.data)
+      } else {
+        throw new Error(response.message)
+      }
+    } catch (error) {
+      dispatch(SetLoader(false))
+      message.error(error instanceof Error ? error.message : 'An error occurred')
+    }
+  }
+
+  const readNotifications = async () => {
+    try {
+      dispatch(SetLoader(true))
+      const response = await ReadAllNotifications()
+      dispatch(SetLoader(false))
+      if (response.success) {
+        getNotifications()
+      } else {
+        throw new Error(response.message)
+      }
+    } catch (error) {
+      dispatch(SetLoader(false))
+      message.error(error instanceof Error ? error.message : 'An error occurred')
+    }
+  }
   useEffect(() => {
     const token = localStorage.getItem('token')
-    if (!token) {
+    if (token) {
+      validateToken()
+      getNotifications()
+    } else {
       navigate('/login')
-      return
     }
-    validateToken()
-  }, [navigate]) // Add navigate to dependency array
+  }, [])
 
   return (
     user && (
       <div className=''>
-        {/* header */}
         <div className='flex justify-between items-center bg-primary p-5'>
           <h1
             className='text-2xl text-white font-bold	cursor-pointer'
@@ -71,6 +106,18 @@ function ProtectedPage({ children }: ProtectedPageProps) {
             >
               {user.name}
             </span>
+            <div>
+              <Badge
+                count={notifications?.filter((noti) => !noti?.read).length}
+                onClick={() => {
+                  readNotifications()
+                  setShowNotifications(true)
+                }}
+                className='cursor-pointer'
+              >
+                <Avatar shape='circle' size='default' icon={<i className='ri-notification-4-line'></i>} />
+              </Badge>
+            </div>
             <i
               className='ri-logout-box-r-line ml-8 hover:cursor-pointer'
               onClick={() => {
@@ -82,6 +129,13 @@ function ProtectedPage({ children }: ProtectedPageProps) {
         </div>
         {/* body */}
         <div className='p-5'>{children}</div>
+
+        <Notifications
+          reloadNotifications={getNotifications}
+          notifications={notifications}
+          showNotifications={showNotifications}
+          setShowNotifications={setShowNotifications}
+        />
       </div>
     )
   )

@@ -16,7 +16,6 @@ interface BidProps {
 const Bids: React.FC<BidProps> = ({ showBidModal, setShowBidModal, selectedProduct }) => {
   const [bidsData, setBidsData] = useState([])
   const dispatch = useDispatch()
-
   const getData = async () => {
     try {
       dispatch(SetLoader(true))
@@ -49,10 +48,10 @@ const Bids: React.FC<BidProps> = ({ showBidModal, setShowBidModal, selectedProdu
     { title: 'Bid Amount', dataIndex: 'bidAmount', align: 'center' },
     {
       title: 'Bid Date',
-      dataIndex: 'bidDate',
+      dataIndex: 'createdAt',
       align: 'center',
-      render: (text, record) => {
-        return moment(text).format('DD/MM/YYYY, h:mm:ss a')
+      render: (record) => {
+        return moment(record).format('DD/MM/YYYY, h:mm:ss a')
       }
     },
     {

@@ -3,6 +3,7 @@ import React, { useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { SetLoader } from '../../redux/loadersSlice'
 import { PlaceNewBid } from '../../apicalls/products'
+import { AddNotification } from '../../apicalls/notifications'
 
 interface BidModalProps {
   showBidModal: boolean
@@ -16,7 +17,6 @@ const BidModal: React.FC<BidModalProps> = ({ showBidModal, setShowBidModal, prod
   const rules = [{ required: true, message: 'Required' }]
   const dispatch = useDispatch()
   const { user } = useSelector((state: any) => state.users)
-
   const onFinish = async (values: any) => {
     try {
       dispatch(SetLoader(true))
@@ -28,7 +28,15 @@ const BidModal: React.FC<BidModalProps> = ({ showBidModal, setShowBidModal, prod
       })
       dispatch(SetLoader(false))
       if (response.success) {
-        message.success('Place bid successfully')
+        message.success('Bid placed successfully')
+
+        await AddNotification({
+          title: 'New Bid',
+          message: `A new bid of $${values.bidAmount} has been placed on ${product?.name}`,
+          user: product?.seller?._id,
+          onClick: `/profile`,
+          read: false
+        })
         reloadData()
         setShowBidModal(false)
       } else {
@@ -39,6 +47,7 @@ const BidModal: React.FC<BidModalProps> = ({ showBidModal, setShowBidModal, prod
       dispatch(SetLoader(false))
     }
   }
+
   return (
     <Modal
       centered
