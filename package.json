@@ -2,10 +2,9 @@
   "name": "northside-mp",
   "version": "1.0.0",
   "scripts": {
-    "install-all": "npm install && cd client && npm install --legacy-peer-deps",
-    "build": "cd client && npm install --legacy-peer-deps && npm run build",
-    "start": "node server/server.js",
-    "dev": "nodemon server/server.js"
+    "install-all": "npm install --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 && cd client && npm install --legacy-peer-deps --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000",
+    "build": "cd client && npm install --legacy-peer-deps --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 && npm run build",
+    "start": "node server/server.js"
   },
   "engines": {
     "node": "18.x"
