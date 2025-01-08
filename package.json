@@ -2,8 +2,8 @@
   "name": "northside-mp",
   "version": "1.0.0",
   "scripts": {
-    "install-all": "npm install --legacy-peer-deps && cd client && npm install --legacy-peer-deps",
-    "build": "cd client && npm install --legacy-peer-deps && npm run build",
+    "install-all": "npm install && cd client && npm install --legacy-peer-deps",
+    "build": "cd client && npm run build",
     "start": "node server/server.js"
   },
   "engines": {
