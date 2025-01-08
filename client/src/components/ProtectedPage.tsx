@@ -102,7 +102,12 @@ function ProtectedPage({ children }: ProtectedPageProps) {
                 }}
                 className='cursor-pointer'
               >
-                <Avatar shape='circle' size='default' icon={<i className='ri-notification-4-line'></i>} />
+                <Avatar
+                  shape='circle'
+                  className='bg-black'
+                  size='default'
+                  icon={<i className='ri-notification-4-line'></i>}
+                />
               </Badge>
             </div>
             <div className='gap-2 flex items-center'>
