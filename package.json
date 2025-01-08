@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "install-all": "npm install && cd client && npm install --legacy-peer-deps",
-    "build": "cd client && npm run build",
+    "build": "cd client && npm install --legacy-peer-deps && npm run build",
     "start": "node server/server.js",
     "dev": "nodemon server/server.js"
   },
