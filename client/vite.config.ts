@@ -6,15 +6,14 @@ export default defineConfig({
   server: {
     proxy: {
       '/api': {
-        target: process.env.NODE_ENV === 'production' 
-          ? '/' 
-          : 'http://localhost:5000',
+        target: process.env.NODE_ENV === 'production' ? '/' : 'http://localhost:5000',
         changeOrigin: true,
       },
     },
   },
   build: {
     outDir: 'dist',
-    sourcemap: true
+    sourcemap: true,
+    chunkSizeWarningLimit: 1600
   }
 })

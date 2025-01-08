@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: northside-marketplace
+    env: node
+    buildCommand: npm run install-all && npm run build
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
