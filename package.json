@@ -4,7 +4,7 @@
   "main": "index.js",
   "scripts": {
     "install-all": "npm install && cd client && npm install",
-    "build": "cd client && npm run build",
+    "build": "cd client && npm install && npm run build",
     "start": "node server/server.js",
     "dev": "nodemon server/server.js"
   },
