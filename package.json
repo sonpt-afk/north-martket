@@ -2,20 +2,20 @@
   "name": "northside-mp",
   "version": "1.0.0",
   "scripts": {
-    "install-all": "npm install --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 && cd client && npm install --legacy-peer-deps --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000",
-    "build": "cd client && npm install --legacy-peer-deps --fetch-retries=5 --fetch-retry-mintimeout=20000 --fetch-retry-maxtimeout=120000 && npm run build",
+    "install-all": "npm install && cd client && npm install --legacy-peer-deps",
+    "build": "cd client && npm install --legacy-peer-deps && npm run build",
     "start": "node server/server.js"
+  },
+  "dependencies": {
+    "bcryptjs": "2.4.3",
+    "cloudinary": "1.41.0",
+    "dotenv": "16.3.1",
+    "express": "4.18.2",
+    "jsonwebtoken": "9.0.2",
+    "mongoose": "8.0.1",
+    "multer": "1.4.5-lts.1"
   },
   "engines": {
     "node": "18.x"
-  },
-  "dependencies": {
-    "bcryptjs": "^2.4.3",
-    "cloudinary": "^1.41.0",
-    "dotenv": "^16.3.1",
-    "express": "^4.18.2",
-    "jsonwebtoken": "^9.0.2",
-    "mongoose": "^8.0.1",
-    "multer": "^1.4.5-lts.1"
   }
 }
