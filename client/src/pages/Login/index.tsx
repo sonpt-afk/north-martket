@@ -68,11 +68,11 @@ const Login: React.FC = () => {
           >
             <Input.Password className='bg-transparent' />
           </Form.Item>
-
-          <Button type='primary' htmlType='submit' block className='mt-4'>
-            Login
-          </Button>
-
+          <div className=' flex items-center justify-center'>
+            <Button htmlType='submit' className='mt-4 bg-primary text-white '>
+              Login
+            </Button>
+          </div>
           <div className='mt-4 text-center'>
             <p className='text-gray-500 text-lg'>
               Don't have an account?{' '}

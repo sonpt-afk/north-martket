@@ -74,9 +74,11 @@ const Register: React.FC = () => {
             </Form.Item>
 
             <Form.Item label={null}>
-              <Button type='primary' htmlType='submit' className='w-full mt-4'>
-                Submit
-              </Button>
+              <div className=' flex items-center justify-center'>
+                <Button htmlType='submit' className='mt-4 bg-primary text-white '>
+                  Register
+                </Button>
+              </div>
             </Form.Item>
 
             <div className='switch-page mt-4 text-center'>
