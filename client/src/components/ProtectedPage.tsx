@@ -110,6 +110,14 @@ function ProtectedPage({ children }: ProtectedPageProps) {
                 />
               </Badge>
             </div>
+            <div
+              className='gap-2 flex items-center cursor-pointer hover:text-blue-600'
+              onClick={() => navigate('/activity-dashboard')}
+              title='View Activity Dashboard (React 19.2 Demo)'
+            >
+              <i className='ri-dashboard-line'></i>
+              <span className='underline'>Dashboard</span>
+            </div>
             <div className='gap-2 flex items-center'>
               <i className='ri-shield-user-line '></i>
               <span

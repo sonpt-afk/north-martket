@@ -9,6 +9,7 @@ import { RootState } from './redux/store'
 import Profile from './pages/Profile'
 import Admin from './pages/Admin'
 import ProductInfo from './pages/ProductInfo'
+import ActivityDashboard from './components/ActivityDashboard'
 
 function App() {
   const loading = useSelector((state: RootState) => state.loaders.loading)
@@ -47,6 +48,14 @@ function App() {
             element={
               <ProtectedPage>
                 <ProductInfo />
+              </ProtectedPage>
+            }
+          />
+          <Route
+            path='/activity-dashboard'
+            element={
+              <ProtectedPage>
+                <ActivityDashboard />
               </ProtectedPage>
             }
           />
