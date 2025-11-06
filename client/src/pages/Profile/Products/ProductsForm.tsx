@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState, useOptimistic, useTransition } from 'react'
 import { Input, Modal, Tabs, Form, Col, Row, message, Checkbox, Select, Button } from 'antd'
 import { useDispatch, useSelector } from 'react-redux'
 import { RootState } from '../../../redux/store'
@@ -35,6 +35,12 @@ const addtionalThings = [
 const rules = [{ required: true, message: 'Required' }]
 const categories = ['Electronics', 'Home', 'Fashion', 'Sports', 'Books', 'Others']
 
+interface ProductFormState {
+  name: string
+  status: 'idle' | 'pending' | 'success' | 'error'
+  operation: 'add' | 'edit' | null
+}
+
 const ProductsForm: React.FC<ProductsFormProps> = ({
   showProductForm,
   setShowProductForm,
@@ -45,30 +51,51 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
   const [selectedTab = '1', setSelectedTab] = useState<string | undefined>('1')
   const dispatch = useDispatch()
   const { user } = useSelector((state: RootState) => state.users)
+  const [isPending, startTransition] = useTransition()
+
+  // Optimistic state for better UX during product operations
+  const [optimisticState, setOptimisticState] = useOptimistic<ProductFormState, Partial<ProductFormState>>(
+    { name: '', status: 'idle', operation: null },
+    (state, newState) => ({ ...state, ...newState })
+  )
 
   const onFinish = async (values: Record<string, any>) => {
-    try {
-      dispatch(SetLoader(true))
-      let response = null
-      if (selectedProduct) {
-        response = await EditProduct(selectedProduct?._id, values)
-      } else {
-        values.seller = user?._id
-        values.status = 'pending'
-        response = await AddProduct(values)
+    startTransition(async () => {
+      try {
+        // Optimistically update UI
+        const operation = selectedProduct ? 'edit' : 'add'
+        setOptimisticState({
+          name: values.name,
+          status: 'pending',
+          operation
+        })
+        dispatch(SetLoader(true))
+
+        let response = null
+        if (selectedProduct) {
+          response = await EditProduct(selectedProduct?._id, values)
+        } else {
+          values.seller = user?._id
+          values.status = 'pending'
+          response = await AddProduct(values)
+        }
+        dispatch(SetLoader(false))
+
+        if (response?.success) {
+          setOptimisticState({ status: 'success' })
+          message.success(response.message)
+          getData()
+          setShowProductForm(false)
+        } else {
+          setOptimisticState({ status: 'error' })
+          message.error(response.message)
+        }
+      } catch (error: any) {
+        dispatch(SetLoader(false))
+        setOptimisticState({ status: 'error' })
+        message.error(error.message || 'An error occurred')
       }
-      dispatch(SetLoader(false))
-      if (response?.success) {
-        message.success(response.message)
-        getData()
-        setShowProductForm(false)
-      } else {
-        message.error(response.message)
-      }
-    } catch (error: any) {
-      dispatch(SetLoader(false))
-      message.error(error.message || 'An error occurred')
-    }
+    })
   }
 
   useEffect(() => {
@@ -186,11 +213,27 @@ const ProductsForm: React.FC<ProductsFormProps> = ({
         </Tabs>
         {selectedTab === '1' && (
           <div className='flex justify-end gap-4 mt-4 pt-4 border-t'>
-            <Button size='large' onClick={() => setShowProductForm(false)} className='min-w-[100px]'>
+            <Button
+              size='large'
+              onClick={() => setShowProductForm(false)}
+              className='min-w-[100px]'
+              disabled={isPending || optimisticState.status === 'pending'}
+            >
               Cancel
             </Button>
-            <Button type='primary' size='large' onClick={() => form.submit()} className='min-w-[100px]'>
-              {selectedProduct ? 'Update' : 'Save'}
+            <Button
+              type='primary'
+              size='large'
+              onClick={() => form.submit()}
+              className='min-w-[100px]'
+              loading={isPending || optimisticState.status === 'pending'}
+              disabled={isPending || optimisticState.status === 'pending'}
+            >
+              {optimisticState.status === 'pending'
+                ? `${optimisticState.operation === 'edit' ? 'Updating' : 'Saving'}...`
+                : selectedProduct
+                  ? 'Update'
+                  : 'Save'}
             </Button>
           </div>
         )}

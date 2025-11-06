@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import { useEffect, useOptimistic, useTransition } from 'react'
 import { Button, Form, Input, message } from 'antd'
 import { Link, useNavigate } from 'react-router-dom'
 import { LoginUser } from '../../apicalls/users'
@@ -16,33 +16,57 @@ export interface LoginResponse {
   data: string
 }
 
-const Login: React.FC = () => {
+interface LoginState {
+  email: string
+  password: string
+  status: 'idle' | 'pending' | 'success' | 'error'
+}
+
+const Login = () => {
   const [form] = Form.useForm<LoginFormValues>()
   const navigate = useNavigate()
   const dispatch = useDispatch()
+  const [isPending, startTransition] = useTransition()
+
+  // Optimistic state for better UX
+  const [optimisticState, setOptimisticState] = useOptimistic<LoginState, Partial<LoginState>>(
+    { email: '', password: '', status: 'idle' },
+    (state, newState) => ({ ...state, ...newState })
+  )
+
   const onFinish = async (values: LoginFormValues) => {
-    try {
-      dispatch(SetLoader(true))
-      const response = await LoginUser(values)
-      dispatch(SetLoader(false))
-      if (response.success && response.data) {
-        message.success(response.message)
-        localStorage.setItem('token', response?.data)
-        navigate('/')
-      } else {
-        throw new Error(response?.message)
+    startTransition(async () => {
+      try {
+        // Optimistically update UI to show pending state
+        setOptimisticState({ email: values.email, status: 'pending' })
+        dispatch(SetLoader(true))
+
+        const response = await LoginUser(values)
+        dispatch(SetLoader(false))
+
+        if (response.success && response.data) {
+          // Optimistically update to success state
+          setOptimisticState({ status: 'success' })
+          message.success(response.message)
+          localStorage.setItem('token', response.data)
+          navigate('/')
+        } else {
+          setOptimisticState({ status: 'error' })
+          throw new Error(response.message)
+        }
+      } catch (error) {
+        dispatch(SetLoader(false))
+        setOptimisticState({ status: 'error' })
+        message.error(error instanceof Error ? error.message : 'An error occurred')
       }
-    } catch (error) {
-      dispatch(SetLoader(false))
-      message.error(error instanceof Error ? error.message : 'An error occurred')
-    }
+    })
   }
 
   useEffect(() => {
     if (localStorage.getItem('token')) {
       navigate('/')
     }
-  })
+  }, [navigate])
 
   return (
     <div className='flex justify-center items-center min-h-screen bg-primary px-5'>
@@ -57,7 +81,7 @@ const Login: React.FC = () => {
               { type: 'email', message: 'Please enter a valid email!' }
             ]}
           >
-            <Input />
+            <Input disabled={isPending || optimisticState.status === 'pending'} />
           </Form.Item>
 
           <Form.Item
@@ -66,11 +90,19 @@ const Login: React.FC = () => {
             label='Password'
             rules={[{ required: true, message: 'Please input your password!' }]}
           >
-            <Input.Password className='bg-transparent' />
+            <Input.Password
+              className='bg-transparent'
+              disabled={isPending || optimisticState.status === 'pending'}
+            />
           </Form.Item>
           <div className=' flex items-center justify-center'>
-            <Button htmlType='submit' className='mt-4 bg-primary text-white '>
-              Login
+            <Button
+              htmlType='submit'
+              className='mt-4 bg-primary text-white'
+              loading={isPending || optimisticState.status === 'pending'}
+              disabled={isPending || optimisticState.status === 'pending'}
+            >
+              {optimisticState.status === 'pending' ? 'Logging in...' : 'Login'}
             </Button>
           </div>
           <div className='mt-4 text-center'>

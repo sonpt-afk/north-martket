@@ -1,5 +1,3 @@
-import React from 'react'
-
 const Spinner = () => {
   return (
     <div className='fixed inset-0 bg-black z-[9999] flex items-center opacity-70 justify-center'>

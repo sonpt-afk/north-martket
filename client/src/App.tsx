@@ -1,4 +1,3 @@
-import React from 'react'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import Home from './pages/Home'
@@ -31,7 +30,7 @@ function App() {
             path='/profile'
             element={
               <ProtectedPage>
-                <Profile></Profile>
+                <Profile />
               </ProtectedPage>
             }
           />
@@ -39,7 +38,7 @@ function App() {
             path='/admin'
             element={
               <ProtectedPage>
-                <Admin></Admin>
+                <Admin />
               </ProtectedPage>
             }
           />
@@ -47,7 +46,7 @@ function App() {
             path='/product/:id'
             element={
               <ProtectedPage>
-                <ProductInfo></ProductInfo>
+                <ProductInfo />
               </ProtectedPage>
             }
           />

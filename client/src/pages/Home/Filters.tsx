@@ -1,5 +1,3 @@
-import React from 'react'
-
 const categories = [
   { name: 'Electronics', value: 'Electronics' },
   { name: 'Home', value: 'Home' },
