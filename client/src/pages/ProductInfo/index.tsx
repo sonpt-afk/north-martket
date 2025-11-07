@@ -1,4 +1,4 @@
-import { Button, message } from 'antd'
+import { Button, message, Tag, Card } from 'antd'
 import React, { useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
@@ -8,12 +8,17 @@ import Divider from '../../components/Divider'
 import { useNavigate, useParams } from 'react-router-dom'
 import moment from 'moment'
 import BidModal from './BidModal'
+import { getRecommendationEngine } from '../../utils/aiRecommendations'
+import { getPriceEngine } from '../../utils/aiPriceSuggestion'
+import ProductCard from '../Home/ProductCard'
 
 const ProductInfo = () => {
   const { user } = useSelector((state) => state.users)
   const [selectedImageIndex, setSelectedImageIndex] = useState(0)
   const [showAddNewBid, setShowAddNewBid] = useState(false)
   const [product, setProduct] = useState(null)
+  const [similarProducts, setSimilarProducts] = useState([])
+  const [bidSuggestion, setBidSuggestion] = useState(null)
   const navigate = useNavigate()
   const dispatch = useDispatch()
   const { id } = useParams()
@@ -22,14 +27,29 @@ const ProductInfo = () => {
       dispatch(SetLoader(true))
       if (id) {
         const response = await GetProductById(id)
-        dispatch(SetLoader(false))
         if (response.success) {
           const bidsResponse = await GetAllBids({ product: id })
-          setProduct({
+          const productData = {
             ...response.data,
             bids: bidsResponse.data
-          })
+          }
+          setProduct(productData)
+
+          // Get all products for AI recommendations
+          const allProductsResponse = await GetProduct({ status: 'approved' })
+          if (allProductsResponse.success) {
+            // Get similar products using AI
+            const recommendationEngine = getRecommendationEngine(allProductsResponse.data)
+            const similar = recommendationEngine.getSimilarProducts(id, 4)
+            setSimilarProducts(similar)
+
+            // Get AI bid suggestion
+            const priceEngine = getPriceEngine(allProductsResponse.data)
+            const suggestion = priceEngine.suggestBidAmount(productData)
+            setBidSuggestion(suggestion)
+          }
         }
+        dispatch(SetLoader(false))
       } else {
         dispatch(SetLoader(false))
         message.error('Product ID is not defined')
@@ -103,6 +123,37 @@ const ProductInfo = () => {
             <div className='text-xl'>Contact: {product?.seller?.email}</div>
             <Divider></Divider>
             <div className='text-2xl font-bold text-gray-500'>Bids</div>
+
+            {/* AI Bid Suggestion */}
+            {bidSuggestion && user?._id !== product?.seller?._id && (
+              <Card className='mb-4 border-blue-200 bg-blue-50'>
+                <div className='flex items-start justify-between'>
+                  <div>
+                    <div className='flex items-center gap-2 mb-2'>
+                      <i className="ri-sparkling-fill text-blue-500" />
+                      <span className='font-semibold'>AI Bid Suggestion</span>
+                      <Tag color="blue">Smart</Tag>
+                    </div>
+                    <div className='text-2xl font-bold text-blue-600'>
+                      ${bidSuggestion.suggestedBid}
+                    </div>
+                    <div className='text-sm text-gray-600 mt-1'>
+                      {bidSuggestion.reasoning}
+                    </div>
+                  </div>
+                  <Button
+                    type='primary'
+                    size='small'
+                    onClick={() => {
+                      setShowAddNewBid(true)
+                    }}
+                  >
+                    Use This Bid
+                  </Button>
+                </div>
+              </Card>
+            )}
+
             <Button
               disabled={user?._id === product?.seller?._id}
               className={`${user?._id === product?.seller?._id ? 'bg-gray-300 backdrop-blur-sm' : 'bg-primary text-white text-2xl font-bold'}`}
@@ -140,6 +191,27 @@ const ProductInfo = () => {
             />
           )}
         </div>
+
+        {/* Similar Products Section */}
+        {similarProducts.length > 0 && (
+          <div className='w-full mt-12 col-span-2'>
+            <Divider />
+            <div className='flex items-center gap-2 mb-6'>
+              <i className="ri-sparkling-fill text-blue-500 text-2xl" />
+              <h2 className='text-2xl font-bold text-gray-700'>You Might Also Like</h2>
+              <Tag color="blue">AI Powered</Tag>
+            </div>
+            <div className='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5'>
+              {similarProducts.map((similarProduct) => (
+                <ProductCard
+                  key={similarProduct._id}
+                  product={similarProduct}
+                  onClick={() => navigate(`/product/${similarProduct._id}`)}
+                />
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     )
   )
