@@ -27,6 +27,29 @@ select:focus {
   box-shadow: none !important;
 }
 
+/* Fix: Remove border from inner input of Ant Design Password component */
+/* The wrapper (.ant-input-affix-wrapper) already has the border from global styles */
+/* This prevents "double border" appearance on production */
+.ant-input-affix-wrapper > input.ant-input,
+.ant-input-affix-wrapper > input.ant-input:focus {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Ensure Password component wrapper maintains proper styling */
+.ant-input-affix-wrapper {
+  min-height: 45px !important;
+  border: 1px solid #e5e5e5 !important;
+  width: 100% !important;
+  padding: 0 11px !important;
+}
+
+.ant-input-affix-wrapper:focus,
+.ant-input-affix-wrapper-focused {
+  border: 1px solid #e5e5e5 !important;
+  box-shadow: none !important;
+}
+
 button {
   height: 45px !important;
   box-shadow: none !important;
