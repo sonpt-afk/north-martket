@@ -142,7 +142,7 @@ const Home = () => {
                 <Input.Search
                   size='large'
                   enterButton
-                  prefix={<i className="ri-sparkling-line text-blue-500" />}
+                  prefix={<i className="ri-sparkling-line text-blue-500 mr-2" />}
                 />
               </AutoComplete>
               {searchSuggestions.length > 0 && (
