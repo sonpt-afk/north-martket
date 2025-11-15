@@ -168,7 +168,7 @@ const ActivityDashboard = () => {
       {/* Header */}
       <div className='mb-6 bg-white p-6 rounded-lg shadow'>
         <h1 className='text-3xl font-bold text-gray-800 mb-2'>
-          ⚡ React 19.2 Activity Dashboard
+           Activity Dashboard
         </h1>
         <p className='text-gray-600 mb-4'>
           Demonstration of <code className='bg-gray-100 px-2 py-1 rounded'>&lt;Activity&gt;</code>{' '}
@@ -191,30 +191,7 @@ const ActivityDashboard = () => {
         </div>
       </div>
 
-      {/* Info Banner */}
-      <div className='mb-6 p-4 bg-blue-50 border-l-4 border-blue-500 rounded'>
-        <h3 className='font-semibold text-blue-800 mb-2'>
-          📊 Activity Component Benefits in Action
-        </h3>
-        <ul className='text-sm text-blue-700 space-y-1'>
-          <li>
-            ✅ <strong>State Preservation:</strong> Switch sections and see counters preserve their
-            state
-          </li>
-          <li>
-            ✅ <strong>Effect Cleanup:</strong> Hidden sections unmount effects (check console
-            logs)
-          </li>
-          <li>
-            ✅ <strong>Resource Optimization:</strong> Timers and intervals pause when hidden
-          </li>
-          <li>
-            ✅ <strong>Selective Hydration:</strong> Each Activity boundary hydrates independently
-          </li>
-        </ul>
-      </div>
-
-      {/* Current Section Indicator */}
+            {/* Current Section Indicator */}
       <div className='mb-4 p-3 bg-purple-50 border border-purple-200 rounded'>
         <p className='text-sm text-purple-800'>
           👁️ <strong>Currently Viewing:</strong>{' '}

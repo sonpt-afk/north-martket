@@ -127,7 +127,10 @@ const Home = () => {
           <div className='flex gap-5 items-center'>
             {!showFilters && (
               <i className='ri-equalizer-line text-xl cursor-pointer' onClick={() => setShowFilters(!showFilters)}></i>
-            )}
+            )
+            // TODO: remove duplicate placeholder text to make the search bar input field cleaner, not stacking texts
+           
+            }
             <div className='flex-1 relative'>
               <AutoComplete
                 value={searchTerm}
