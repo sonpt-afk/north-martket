@@ -11,12 +11,19 @@ createRoot(document.getElementById('root')!).render(
           Button: {
             colorPrimary: '#40513B',
             colorPrimaryHover: '#40513B',
-            borderRadius: 0
+            algorithm: true,
+            borderRadius: 0,
+            defaultBorderColor: '#d9d9d9',
+            defaultColor: 'rgba(0, 0, 0, 0.88)',
+            defaultBg: '#ffffff'
           }
         },
         token: {
           borderRadius: 2,
-          colorPrimary: '#40513B'
+          colorPrimary: '#40513B',
+          colorText: 'rgba(0, 0, 0, 0.88)',
+          colorTextSecondary: 'rgba(0, 0, 0, 0.65)',
+          colorBorder: '#d9d9d9'
         }
       }}>
         <App />
